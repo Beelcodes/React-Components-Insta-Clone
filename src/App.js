@@ -19,7 +19,21 @@ const App = () => {
   // This state is the source of truth for the data inside the app. You won't be needing dummyData anymore.
   // To make the search bar work (which is stretch) we'd need another state to hold the search term.
   const [posts, setPosts] = useState(DummyData);
+  const [searchText, setSearchText] = useState("");
+  const addCommentToPost = (postId, commentContent) => {
+    const updatedPosts = posts.map((post) => {
+      if (post.id === postId) {
+        post.comments.push({
+          username: "anonymus",
+          text: commentContent,
+          id: 42069,
+        });
+      }
+      return post;
+    });
 
+    setPosts(updatedPosts);
+  };
   const likePost = (postId) => {
     /*
       This function serves the purpose of increasing the number of likes by one, of the post with a given id.
@@ -32,12 +46,27 @@ const App = () => {
         - if the `id` of the post matches `postId`, return a new post object with the desired values (use the spread operator).
         - otherwise just return the post object unchanged.
      */
-  };
 
+    const likeUpdate = posts.map((post) => {
+      if (!post.liked && post.id === postId)
+        return { ...post, likes: post.likes + 1, liked: true };
+      else return post;
+    });
+    setPosts(likeUpdate);
+  };
+  const fileteredPosts = posts.filter((post) =>
+    post.username.includes(searchText)
+  );
   return (
     <div className="App">
       {/* Add SearchBar and Posts here to render them */}
       {/* Check the implementation of each component, to see what props they require, if any! */}
+      <SearchBar searchText={searchText} setSearchText={setSearchText} />
+      <Posts
+        likePost={likePost}
+        posts={fileteredPosts}
+        addCommentToPost={addCommentToPost}
+      />
     </div>
   );
 };
